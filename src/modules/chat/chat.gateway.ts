@@ -3,7 +3,6 @@ import {
   SubscribeMessage,
   WebSocketGateway,
   WebSocketServer,
-  WsResponse,
 } from '@nestjs/websockets';
 
 import { Server } from 'socket.io';
@@ -17,14 +16,9 @@ export class ChatGateway {
   @WebSocketServer()
   server: Server;
 
-  @SubscribeMessage('events')
-  findAll(@MessageBody() data: any): WsResponse<any> {
+  @SubscribeMessage('sendMessage')
+  sendMessage(@MessageBody() data: any): void {
     console.log('data: ', data);
-    return { event: 'events', data: data };
-  }
-
-  @SubscribeMessage('identity')
-  async identity(@MessageBody() data: number): Promise<WsResponse<number>> {
-    return { event: 'identity', data };
+    this.server.emit('broadcast', data);
   }
 }
